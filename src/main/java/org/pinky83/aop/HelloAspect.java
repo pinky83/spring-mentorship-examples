@@ -1,14 +1,15 @@
 package org.pinky83.aop;
 
 
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.pinky83.bean.InjectedBean;
-import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Method;
-
 @Component
-public class HelloAspect implements MethodBeforeAdvice {
+@Aspect
+public class HelloAspect {
 
     private final InjectedBean injectedBean;
 
@@ -16,8 +17,12 @@ public class HelloAspect implements MethodBeforeAdvice {
         this.injectedBean = injectedBean;
     }
 
-    @Override
-    public void before(Method method, Object[] args, Object target) {
+    @Pointcut("execution(* org.pinky83.bean.ExampleBean.*(..))")
+    public void anyName() {
+    }
+
+    @Before("anyName()")
+    public void before() {
         injectedBean.setMessage("Injected bean's message changed!");
     }
 }
