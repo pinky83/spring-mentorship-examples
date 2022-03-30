@@ -2,6 +2,8 @@ package org.pinky83.bean;
 
 import org.springframework.stereotype.Component;
 
+import java.util.Locale;
+
 @Component
 public class ExampleBean {
 
