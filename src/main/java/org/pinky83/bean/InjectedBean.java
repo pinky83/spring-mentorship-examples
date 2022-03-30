@@ -2,7 +2,6 @@ package org.pinky83.bean;
 
 import lombok.Data;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.Locale;
 import java.util.Scanner;
 
 @Component
-@ComponentScan(basePackages = {"org.pinky83.configuration"})
 @Data
 public class InjectedBean {
 
