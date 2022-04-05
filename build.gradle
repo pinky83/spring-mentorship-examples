@@ -12,8 +12,22 @@ repositories {
 dependencies {
     def springVersion = '5.3.15'
 
-    implementation group: 'org.springframework', name: 'spring-webmvc', version: "${springVersion}"
-    implementation group: 'org.springframework', name: 'spring-web', version: "${springVersion}"
+    implementation group: 'org.springframework', name: 'spring-context', version: "${springVersion}"
+    implementation group: 'org.springframework', name: 'spring-core', version: "${springVersion}"
+    implementation group: 'org.springframework.data', name: 'spring-data-jpa', version: "2.6.3"
+
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.36'
+    //for test purposes only
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.36'
+    implementation group: 'org.hsqldb', name: 'hsqldb', version: '2.6.1'
+
+    implementation group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.2.Final'
+    implementation group: 'org.hibernate.orm', name: 'hibernate-core', version: '6.0.0.Final'
+
+    implementation group: 'org.apache.tomcat', name: 'tomcat-jdbc', version: '9.0.37'
+
+
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.6.2'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
