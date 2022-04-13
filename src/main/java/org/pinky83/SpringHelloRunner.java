@@ -1,7 +1,6 @@
 package org.pinky83;
 
 import lombok.Getter;
-import org.pinky83.configuration.AppConfiguration;
 import org.pinky83.pojo.User;
 import org.pinky83.service.UserService;
 import org.springframework.beans.BeansException;
@@ -10,7 +9,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +21,6 @@ public class SpringHelloRunner implements InitializingBean, ApplicationContextAw
 
     static {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(SpringHelloRunner.class);
-        applicationContext.register(AppConfiguration.class);
     }
 
     private static SpringHelloRunner instance;
@@ -58,6 +55,6 @@ public class SpringHelloRunner implements InitializingBean, ApplicationContextAw
         user.setRegistered(new Date());
         user.setPassword("secret");
 
-        instance.getUserService().create(user, AuthorizedUser.id());
+        instance.getUserService().create(user, user.getId());
     }
 }

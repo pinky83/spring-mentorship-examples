@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface CrudUserDao extends CrudRepository<User, Integer> {
-    List<User> getAll();
+    List<User> findAll();
 
     User getById(Integer id);
 

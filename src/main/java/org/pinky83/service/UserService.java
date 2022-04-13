@@ -5,6 +5,7 @@ import org.pinky83.dao.CrudUserDao;
 import org.pinky83.pojo.User;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class UserService implements GenericService<User> {
     }
 
     public List<User> getAll(Integer userId) {
-        return userDao.getAll();
+        return userDao.findAll();
     }
 
     public User getById(Integer id, Integer userId) {
@@ -41,6 +42,7 @@ public class UserService implements GenericService<User> {
     }
 
     @Override
+    @Transactional
     public User create(User entity, Integer userId) {
         return userDao.save(entity);
     }

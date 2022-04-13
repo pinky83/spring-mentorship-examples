@@ -6,11 +6,14 @@ import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Configuration
@@ -20,6 +23,7 @@ import javax.sql.DataSource;
 })
 public class AppConfiguration {
 
+    public static final String PACKAGE_TO_SCAN = "org.pinky83.pojo";
     @Autowired
     private Environment environment;
 
@@ -44,13 +48,13 @@ public class AppConfiguration {
 
     @Bean
     @Profile("hsqldb")
-    public DataSource hsqldbDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource(dbUrl);
-        dataSource.setDriverClassName(environment.getProperty("database.driverClassName"));
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-
-        return dataSource;
+    public DataSource dataSource() {
+        return new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.HSQL)
+                .setName("quiz")
+                .addScript("classpath:db/initDB_hsql.sql")
+//                .addScript("classpath:jdbc/populateDB_hsql.sql")
+                .build();
     }
 
     @Bean
@@ -65,29 +69,22 @@ public class AppConfiguration {
         return dataSource;
     }
 
-    @Bean("entityManagerFactory")
-    @Profile("hsqldb")
-    public LocalContainerEntityManagerFactoryBean hsqldbEntityManagerFactory() {
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-        entityManagerFactoryBean.setDataSource(hsqldbDataSource());
-        entityManagerFactoryBean.setPackagesToScan("org.pinky83.pojo");
+        HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
 
-        return entityManagerFactoryBean;
-    }
-
-    @Bean("entityManagerFactory")
-    @Profile("postgres")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-        entityManagerFactoryBean.setDataSource(postgresDataSource());
-        entityManagerFactoryBean.setPackagesToScan("org.pinky83.pojo");
+        entityManagerFactoryBean.setDataSource(dataSource);
+        entityManagerFactoryBean.setPackagesToScan(PACKAGE_TO_SCAN);
+        entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter);
+        entityManagerFactoryBean.setPersistenceUnitName("mainJpaUnit");
 
         return entityManagerFactoryBean;
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager() {
-        return new JpaTransactionManager(entityManagerFactory().getObject());
+    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory);
     }
 
     @Bean
