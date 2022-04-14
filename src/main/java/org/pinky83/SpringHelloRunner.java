@@ -11,9 +11,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
-
 @ComponentScan(basePackages = {"org.pinky83.*"})
 @Component
 public class SpringHelloRunner implements InitializingBean, ApplicationContextAware {
@@ -55,15 +52,15 @@ public class SpringHelloRunner implements InitializingBean, ApplicationContextAw
 
         User user1 = instance.getUserService().create(user, user.getId());
 
-        User user2 = instance.getUserService().getById(user1.getId(), user.getId());
-        System.out.println(user2);
-
-        List<User> users = instance.getUserService().getAll(user.getId());
-        System.out.println(users);
-
-        instance.getUserService().delete(user1.getId(), user.getId());
-        System.out.println("Users after deletion: ");
-        users = instance.getUserService().getAll(user.getId());
-        System.out.println(users);
+//        User user2 = instance.getUserService().getById(user1.getId(), user.getId());
+//        System.out.println(user2);
+//
+//        List<User> users = instance.getUserService().getAll(user.getId());
+//        System.out.println(users);
+//
+//        instance.getUserService().delete(user1.getId(), user.getId());
+//        System.out.println("Users after deletion: ");
+//        users = instance.getUserService().getAll(user.getId());
+//        System.out.println(users);
     }
 }

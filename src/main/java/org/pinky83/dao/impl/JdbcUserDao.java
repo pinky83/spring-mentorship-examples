@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.pinky83.configuration.AppConfiguration;
 import org.pinky83.dao.CrudUserDao;
 import org.pinky83.pojo.User;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -11,11 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.pinky83.dao.Constants.*;
+
 @Repository
+@Qualifier("jdbc")
 @Slf4j
 public class JdbcUserDao implements CrudUserDao {
 
-    private AppConfiguration configuration;
+    private final AppConfiguration configuration;
 
     public JdbcUserDao(AppConfiguration configuration) {
         this.configuration = configuration;
@@ -34,8 +38,7 @@ public class JdbcUserDao implements CrudUserDao {
     @Override
     public User save(User entity) {
         try (Connection connection = configuration.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("insert into users (name, email, password, enabled, registered)" +
-                    "values (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement statement = connection.prepareStatement(INSERT_QUERY, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, entity.getName());
             statement.setString(2, entity.getEmail());
             statement.setString(3, entity.getPassword());
@@ -61,7 +64,7 @@ public class JdbcUserDao implements CrudUserDao {
         User result = getById(entity.getId());
         if (Objects.nonNull(result)) {
             try(Connection connection = configuration.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("delete from users where id=?");
+                PreparedStatement statement = connection.prepareStatement(DELETE_QUERY);
 
                 statement.setInt(1, entity.getId());
                 statement.execute();
@@ -78,7 +81,7 @@ public class JdbcUserDao implements CrudUserDao {
         User result = null;
 
         try(Connection connection = configuration.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("select * from users where id=?");
+            PreparedStatement statement = connection.prepareStatement(GET_BY_ID_QUERY);
 
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -103,7 +106,7 @@ public class JdbcUserDao implements CrudUserDao {
         List<User> result = new ArrayList<>();
 
         try(Connection connection = configuration.getConnection()) {
-           PreparedStatement statement = connection.prepareStatement("select * from users");
+           PreparedStatement statement = connection.prepareStatement(GET_ALL_QUERY);
            ResultSet resultSet = statement.executeQuery();
 
            while (resultSet.next()) {

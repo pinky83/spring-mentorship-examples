@@ -3,6 +3,7 @@ package org.pinky83.service;
 import lombok.extern.slf4j.Slf4j;
 import org.pinky83.dao.CrudUserDao;
 import org.pinky83.pojo.User;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -17,7 +18,7 @@ public class UserService implements GenericService<User> {
     private final CrudUserDao userDao;
     private final MessageSource messageSource;
 
-    public UserService(CrudUserDao userDao, MessageSource messageSource) {
+    public UserService(@Qualifier("jdbcTemplate") CrudUserDao userDao, MessageSource messageSource) {
         this.userDao = userDao;
         this.messageSource = messageSource;
     }
