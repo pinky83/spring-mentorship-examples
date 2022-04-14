@@ -9,14 +9,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @ComponentScan(basePackages = {"org.pinky83.*"})
 @Component
-@EnableJpaRepositories()
 public class SpringHelloRunner implements InitializingBean, ApplicationContextAware {
 
     static {
@@ -52,7 +50,6 @@ public class SpringHelloRunner implements InitializingBean, ApplicationContextAw
         user.setEmail("testUser1@gmain.com");
         user.setName("Test");
         user.setEnabled(true);
-        user.setRegistered(new Date());
         user.setPassword("secret");
 
         instance.getUserService().create(user, user.getId());

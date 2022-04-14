@@ -1,27 +1,40 @@
 package org.pinky83.configuration;
 
+import lombok.extern.slf4j.Slf4j;
+import org.hsqldb.cmdline.SqlFile;
+import org.hsqldb.cmdline.SqlToolError;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 @Configuration
 @PropertySources({
         @PropertySource("db/default.properties"),
         @PropertySource(value = "db/${spring.profiles.active}.properties")
 })
-public class AppConfiguration {
+@Slf4j
+public class AppConfiguration implements InitializingBean {
+
+    static {
+        try {
+            Class.forName("org.hsqldb.jdbc.JDBCDriver");
+        } catch (ClassNotFoundException e) {
+            log.info("JDBC driver not found", e);
+        }
+    }
 
     public static final String PACKAGE_TO_SCAN = "org.pinky83.pojo";
     @Autowired
@@ -46,45 +59,15 @@ public class AppConfiguration {
         return messageSource;
     }
 
-    @Bean
-    @Profile("hsqldb")
-    public DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.HSQL)
-                .setName("quiz")
-                .addScript("classpath:db/initDB_hsql.sql")
-//                .addScript("classpath:jdbc/populateDB_hsql.sql")
-                .build();
-    }
+    public Connection getConnection() {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(dbUrl, username, password);
+        } catch (SQLException e) {
+            log.info("Error while trying to get DB connection", e);
+        }
 
-    @Bean
-    @Profile("postgres")
-    public DataSource postgresDataSource() {
-        org.apache.tomcat.jdbc.pool.DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource();
-        dataSource.setUrl(dbUrl);
-        dataSource.setDriverClassName(environment.getProperty("database.driverClassName"));
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-
-        return dataSource;
-    }
-
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
-        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-        HibernateJpaVendorAdapter jpaVendorAdapter = new HibernateJpaVendorAdapter();
-
-        entityManagerFactoryBean.setDataSource(dataSource);
-        entityManagerFactoryBean.setPackagesToScan(PACKAGE_TO_SCAN);
-        entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter);
-        entityManagerFactoryBean.setPersistenceUnitName("mainJpaUnit");
-
-        return entityManagerFactoryBean;
-    }
-
-    @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
-        return new JpaTransactionManager(entityManagerFactory);
+        return connection;
     }
 
     @Bean
@@ -93,4 +76,19 @@ public class AppConfiguration {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
+    @Override
+    public void afterPropertiesSet() throws SQLException {
+        try (Connection connection = getConnection()) {
+            //TODO replace to resource with relative path
+            SqlFile sf = new SqlFile(new File("/Users/dmytroyakovenko/Projects/spring-mentorship-examples/src/main/resources/db/initDB_hsql.sql"));
+            sf.setConnection(connection);
+            sf.execute();
+        } catch (SqlToolError e) {
+            log.error("Sql Tool error", e);
+        } catch (SQLException e) {
+            log.info("Error while trying to execute initial DB script", e);
+        } catch (IOException e) {
+            log.info("Error while trying to get DB connection", e);
+        }
+    }
 }

@@ -14,16 +14,14 @@ dependencies {
 
     implementation group: 'org.springframework', name: 'spring-context', version: "${springVersion}"
     implementation group: 'org.springframework', name: 'spring-core', version: "${springVersion}"
-    implementation group: 'org.springframework.data', name: 'spring-data-jpa', version: "2.6.3"
 
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.36'
     //for test purposes only
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.36'
     implementation group: 'org.hsqldb', name: 'hsqldb', version: '2.6.1'
+    implementation group: 'org.hsqldb', name: 'sqltool', version: '2.6.1'
 
-    implementation group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.2.Final'
-
-    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.0.Final'
+    implementation group: 'org.springframework', name: 'spring-jdbc', version: "${springVersion}"
 
     implementation group: 'org.apache.tomcat', name: 'tomcat-jdbc', version: '9.0.37'
 
@@ -32,12 +30,6 @@ dependencies {
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
-
-    implementation group: 'org.aspectj', name: 'aspectjrt', version: '1.9.8'
-    implementation group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.8'
-
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
 test {

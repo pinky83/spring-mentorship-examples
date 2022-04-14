@@ -43,4 +43,4 @@ CREATE TABLE questions
   FOREIGN KEY ( answer_id ) REFERENCES ANSWERS (id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX questions_unique_description_idx ON questions (answer_id, description)
-
+;
