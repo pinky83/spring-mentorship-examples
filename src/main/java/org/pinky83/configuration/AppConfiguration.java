@@ -28,14 +28,6 @@ import java.sql.SQLException;
 @Slf4j
 public class AppConfiguration implements InitializingBean {
 
-    static {
-        try {
-            Class.forName("org.hsqldb.jdbc.JDBCDriver");
-        } catch (ClassNotFoundException e) {
-            log.info("JDBC driver not found", e);
-        }
-    }
-
     public static final String PACKAGE_TO_SCAN = "org.pinky83.pojo";
     @Autowired
     private Environment environment;
@@ -59,15 +51,9 @@ public class AppConfiguration implements InitializingBean {
         return messageSource;
     }
 
-    public Connection getConnection() {
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(dbUrl, username, password);
-        } catch (SQLException e) {
-            log.info("Error while trying to get DB connection", e);
-        }
+    public Connection getConnection() throws SQLException {
 
-        return connection;
+        return DriverManager.getConnection(dbUrl, username, password);
     }
 
     @Bean
@@ -77,7 +63,7 @@ public class AppConfiguration implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws SQLException {
+    public void afterPropertiesSet() {
         try (Connection connection = getConnection()) {
             //TODO replace to resource with relative path
             SqlFile sf = new SqlFile(new File("/Users/dmytroyakovenko/Projects/spring-mentorship-examples/src/main/resources/db/initDB_hsql.sql"));
