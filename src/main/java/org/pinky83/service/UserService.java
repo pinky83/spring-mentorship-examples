@@ -55,11 +55,11 @@ public class UserService implements GenericService<User> {
         }
     }
 
-    User getByEmail(String email) {
+    public User getByEmail(String email) {
         return userDao.getByEmail(email);
     }
 
-    User getByName(String name) {
+    public User getByName(String name) {
         return userDao.getByName(name);
     }
 }

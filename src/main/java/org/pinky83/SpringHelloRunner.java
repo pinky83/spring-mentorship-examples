@@ -11,12 +11,14 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @ComponentScan(basePackages = {"org.pinky83.*"})
 @Component
 public class SpringHelloRunner implements InitializingBean, ApplicationContextAware {
 
     static {
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(SpringHelloRunner.class);
+        new AnnotationConfigApplicationContext(SpringHelloRunner.class);
     }
 
     private static SpringHelloRunner instance;
@@ -45,22 +47,32 @@ public class SpringHelloRunner implements InitializingBean, ApplicationContextAw
     public static void main(String[] args) {
 
         User user = new User();
-        user.setEmail("testUser1@gmain.com");
+        user.setEmail("testUser1@gmail.com");
         user.setName("Test");
         user.setEnabled(true);
         user.setPassword("secret");
 
         User user1 = instance.getUserService().create(user, user.getId());
 
-//        User user2 = instance.getUserService().getById(user1.getId(), user.getId());
-//        System.out.println(user2);
-//
-//        List<User> users = instance.getUserService().getAll(user.getId());
-//        System.out.println(users);
-//
-//        instance.getUserService().delete(user1.getId(), user.getId());
-//        System.out.println("Users after deletion: ");
-//        users = instance.getUserService().getAll(user.getId());
-//        System.out.println(users);
+        System.out.println("Get user by id:");
+        User user2 = instance.getUserService().getById(user1.getId(), user.getId());
+        System.out.println(user2);
+
+        System.out.println("Get user by email:");
+        User user3 = instance.getUserService().getByEmail(user1.getEmail());
+        System.out.println(user3);
+
+        System.out.println("Get user by name:");
+        User user4 = instance.getUserService().getByName(user1.getName());
+        System.out.println(user4);
+
+        System.out.println("Getting all users: ");
+        List<User> users = instance.getUserService().getAll(user.getId());
+        System.out.println(users);
+
+        instance.getUserService().delete(user1.getId(), user.getId());
+        System.out.println("Users after deletion: ");
+        users = instance.getUserService().getAll(user.getId());
+        System.out.println(users);
     }
 }
