@@ -8,8 +8,8 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
 @ToString
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
 @Table(name = "users")

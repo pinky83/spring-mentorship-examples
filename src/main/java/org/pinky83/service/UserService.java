@@ -2,10 +2,10 @@ package org.pinky83.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.pinky83.dao.CrudUserDao;
+import org.pinky83.exception.UserNotFoundException;
 import org.pinky83.pojo.User;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -28,21 +28,20 @@ public class UserService implements GenericService<User> {
     }
 
     public User getById(Integer id, Integer userId) {
-        return userDao.getById(id);
+        return userDao.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Override
     public boolean delete(Integer id, Integer userId) {
         User entity = userDao.getById(id);
         if (Objects.nonNull(entity)) {
-            userDao.delete(entity);
+            userDao.deleteById(id);
             return true;
         }
         return false;
     }
 
     @Override
-    @Transactional
     public User create(User entity, Integer userId) {
         return userDao.save(entity);
     }
@@ -56,11 +55,11 @@ public class UserService implements GenericService<User> {
         }
     }
 
-    User getByEmail(String email) {
+     public User getByEmail(String email) {
         return userDao.getByEmail(email);
     }
 
-    User getByName(String name) {
+     public User getByName(String name) {
         return userDao.getByName(name);
     }
 }

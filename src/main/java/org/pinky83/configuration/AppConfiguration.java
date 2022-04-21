@@ -53,7 +53,7 @@ public class AppConfiguration {
                 .setType(EmbeddedDatabaseType.HSQL)
                 .setName("quiz")
                 .addScript("classpath:db/initDB_hsql.sql")
-//                .addScript("classpath:jdbc/populateDB_hsql.sql")
+                .addScript("classpath:db/populateDB_hsql.sql")
                 .build();
     }
 
